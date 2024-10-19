@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Select Courses</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            width: 500px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        form div {
+            margin-bottom: 20px;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        select {
+            display: none; /* Hidden by default */
+            padding: 10px;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 14px;
+            background-color: #f9f9f9;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        a {
+            display: block;
+            margin-top: 20px;
+            color: #007bff;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Add a modern hover effect to the checkboxes */
+        input[type="checkbox"] {
+            cursor: pointer;
+        }
+
+        .teacher-select {
+            display: none; /* Initially hidden */
+        }
+
+        .teacher-select.active {
+            display: block; /* Show when active */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Select Your Courses</h1>
+        <form method="POST">
+            {% for course in courses %}
+                <div>
+                    <input type="checkbox" name="courses" value="{{ course.id }}" onchange="toggleTeachers('{{ course.id }}')">
+                    {{ course.name }} ({{ course.course_type }})<br>
+
+                    <select name="teachers" id="teachers-{{ course.id }}" class="teacher-select">
+                        <option value="">Select Teacher</option>
+                        {% for teacher in teachers %}
+                            {% if teacher.subject == course.subject %}
+                                {% if teacher.available > 0.0 %}
+                                    <option value="{{ teacher.id }}">{{ teacher.name }}</option>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+            {% endfor %}
+            <button type="submit">Submit</button>
+        </form>
+        <a href="{{ url_for('student_dashboard') }}">Back to Dashboard</a>
+    </div>
+
+    <script>
+        function toggleTeachers(courseId) {
+            const checkbox = document.querySelector(`input[value="${courseId}"]`);
+            const teacherSelect = document.getElementById(`teachers-${courseId}`);
+            if (checkbox.checked) {
+                teacherSelect.classList.add('active');
+            } else {
+                teacherSelect.classList.remove('active');
+                teacherSelect.value = ''; // Reset selection
+            }
+        }
+    </script>
+</body>
+</html>

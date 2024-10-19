@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Selection System</title>
+    
+    <!-- Embedded CSS for styling -->
+    <style>
+        body {
+            background-color: #f0f8ff; /* Light background */
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            text-align: center;
+            background-color: #ffffff; /* White background for the container */
+            padding: 50px;
+            border-radius: 15px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Shadow effect */
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        .button-container {
+            background-color: #e9ecef; /* Highlight background for buttons */
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        a {
+            display: inline-block;
+            text-decoration: none;
+            color: white;
+            background-color: #007BFF; /* Button color */
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            width: 40%; /* Ensure buttons take up 40% width each */
+            text-align: center;
+        }
+
+        a:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+
+        .admin {
+            background-color: #28a745; /* Different color for admin button */
+        }
+
+        .admin:hover {
+            background-color: #218838; /* Darker green on hover */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to the Course Selection System</h1>
+        
+        <div class="button-container">
+            <a href="{{ url_for('register') }}">Register</a>&nbsp;
+            <a href="{{ url_for('login') }}">Login</a>
+        </div>
+        
+        <a href="{{ url_for('admin_login') }}" class="admin">Admin Login</a>
+    </div>
+</body>
+</html>

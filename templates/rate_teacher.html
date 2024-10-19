@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Rate Teacher</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Rate a Teacher</h1>
+    <form method="POST">
+        <label for="teacher">Select Teacher:</label>
+        <select name="teacher_id" id="teacher" required>
+            {% for teacher in teachers %}
+                <option value="{{ teacher.id }}">{{ teacher.name }}</option>
+            {% endfor %}
+        </select>
+        <label for="rating">Rating (1-5):</label>
+        <input type="number" name="rating" min="1" max="5" required>
+        <label for="comments">Comments:</label>
+        <textarea name="comments" rows="4" required></textarea>
+        <button type="submit">Submit Rating</button>
+    </form>
+    <a href="{{ url_for('student_dashboard') }}">Back to Dashboard</a>
+</body>
+</html>

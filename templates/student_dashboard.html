@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: relative;
+        }
+
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 30px;
+            width: 800px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 15px 25px;
+            margin: 10px 0;
+            text-decoration: none;
+            color: white;
+            background-color: #007BFF;
+            border-radius: 5px;
+            width: 800px;
+            transition: background-color 0.3s, transform 0.3s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .button:active {
+            background-color: #004085;
+            transform: translateY(0);
+        }
+
+        .course-list {
+            margin-top: 20px;
+            text-align: left;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .course-list li {
+            padding: 5px 0;
+        }
+
+        .logout-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            text-decoration: none;
+        }
+
+        .logout-button:hover {
+            background-color: darkred;
+            transform: translateY(-2px);
+        }
+
+        .feedback-section {
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .rating {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0;
+        }
+
+        .star {
+            font-size: 30px;
+            color: #ddd;
+            cursor: pointer;
+        }
+
+        .star.selected {
+            color: #ffcc00;
+        }
+
+        #submitFeedback {
+            margin-top: 10px;
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #submitFeedback:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <a class="logout-button" href="/logout">Logout</a>
+    <div class="container">
+        <h1>Welcome, {{ user.name }}</h1>
+        <div class="button-container">
+            <a class="button" href="/select_courses">Select Courses</a>
+            <a class="button" href="/teacher_profiles">View Teacher Profiles</a>
+        </div>
+        
+        <div class="course-list">
+            <h2>Your Selected Courses:</h2>
+            <ul>
+                {% if courses %}
+                    {% for course in courses %}
+                        <li>{{ course.name }} ({{ course.course_type }})</li>
+                    {% endfor %}
+                {% else %}
+                    <li>No courses selected.</li>
+                {% endif %}
+            </ul>
+        </div>
+
+        
+        <div class="feedback-section">
+            <h2>Give Feedback</h2>
+            <label for="teacher">Select Teacher:</label>
+            <select id="teacher" required>
+                <option value="">Select Teacher</option>
+                {% for teacher in teachers %}
+                    <option value="{{ teacher.id }}">{{ teacher.name }}</option>
+                {% endfor %}
+            </select>
+
+            <div class="rating">
+                <span class="star" data-value="1">★</span>
+                <span class="star" data-value="2">★</span>
+                <span class="star" data-value="3">★</span>
+                <span class="star" data-value="4">★</span>
+                <span class="star" data-value="5">★</span>
+            </div>
+            <textarea id="feedbackComments" placeholder="Add your comments here..."></textarea>
+            <button id="submitFeedback">Submit Feedback</button>
+        </div>
+    </div>
+
+    <script>
+        // Star rating functionality
+        const stars = document.querySelectorAll('.star');
+        let rating = 0;
+
+        stars.forEach(star => {
+            star.addEventListener('click', () => {
+                rating = star.getAttribute('data-value');
+                stars.forEach(s => {
+                    s.classList.remove('selected');
+                });
+                star.classList.add('selected');
+                for (let i = 0; i < rating; i++) {
+                    stars[i].classList.add('selected');
+                }
+            });
+        });
+
+        document.getElementById('submitFeedback').addEventListener('click', function() {
+            const teacherId = document.getElementById('teacher').value;
+            const comments = document.getElementById('feedbackComments').value;
+
+            if (teacherId && rating) {
+                const feedbackData = {
+                    teacher_id: teacherId,
+                    rating: rating,
+                    comments: comments,
+                    student_id: '{{ user.id }}'  // Get student ID from session
+                };
+
+                fetch('/submit_feedback', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(feedbackData),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message || data.error);
+                    if (data.success) {
+                        // Reset the feedback form
+                        stars.forEach(star => {
+                            star.classList.remove('selected');
+                        });
+                        rating = 0; // Reset rating
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            } else {
+                alert("Please select a teacher and give a rating.");
+            }
+        });
+    </script>
+</body>
+</html>
